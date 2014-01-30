@@ -4,7 +4,7 @@ Name:       upower
 # << macros
 
 Summary:    Power Management Service
-Version:    0.9.21
+Version:    0.99
 Release:    1
 Group:      System/Libraries
 License:    GPLv2+
@@ -26,6 +26,7 @@ BuildRequires:  pkgconfig(udev) >= 187
 BuildRequires:  libtool
 BuildRequires:  intltool
 BuildRequires:  gettext
+BuildRequires:  python
 BuildRequires:  systemd-devel
 
 %description
