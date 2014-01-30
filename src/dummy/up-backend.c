@@ -100,7 +100,9 @@ up_backend_add_cb (UpBackend *backend)
 
 	/* setup poll */
 	timer_id = g_timeout_add_seconds (2, (GSourceFunc) up_backend_changed_time_cb, backend);
-	g_source_set_name_by_id (timer_id, "[upower] up_backend_changed_time_cb (dummy)");
+#if GLIB_CHECK_VERSION(2,25,8)
+	g_source_set_name_by_id (timer_id, "[UpBackend] changed");
+#endif
 out:
 	return FALSE;
 }
@@ -128,31 +130,6 @@ up_backend_coldplug (UpBackend *backend, UpDaemon *daemon)
 #endif
 
 	return TRUE;
-}
-
-/**
- * up_backend_get_critical_action:
- * @backend: The %UpBackend class instance
- *
- * Which action will be taken when %UP_DEVICE_LEVEL_ACTION
- * warning-level occurs.
- **/
-const char *
-up_backend_get_critical_action (UpBackend *backend)
-{
-	return "PowerOff";
-}
-
-/**
- * up_backend_take_action:
- * @backend: The %UpBackend class instance
- *
- * Act upon the %UP_DEVICE_LEVEL_ACTION warning-level.
- **/
-void
-up_backend_take_action (UpBackend *backend)
-{
-	g_debug ("Not taking any action, dummy backend is used");
 }
 
 /**
@@ -252,4 +229,75 @@ UpBackend *
 up_backend_new (void)
 {
 	return g_object_new (UP_TYPE_BACKEND, NULL);
+}
+
+/**
+ * up_backend_kernel_can_suspend:
+ **/
+gboolean
+up_backend_kernel_can_suspend (UpBackend *backend)
+{
+	return FALSE;
+}
+
+/**
+ * up_backend_kernel_can_hibernate:
+ **/
+gboolean
+up_backend_kernel_can_hibernate (UpBackend *backend)
+{
+	return FALSE;
+}
+
+/**
+ * up_backend_has_encrypted_swap:
+ **/
+gboolean
+up_backend_has_encrypted_swap (UpBackend *backend)
+{
+	return FALSE;
+}
+
+/**
+ * up_backend_get_used_swap:
+ *
+ * Return value: a percentage value
+ **/
+gfloat
+up_backend_get_used_swap (UpBackend *backend)
+{
+	return 0.0;
+}
+
+/**
+ * up_backend_get_suspend_command:
+ **/
+const gchar *
+up_backend_get_suspend_command (UpBackend *backend)
+{
+	return "/bin/true";
+}
+
+/**
+ * up_backend_get_hibernate_command:
+ **/
+const gchar *
+up_backend_get_hibernate_command (UpBackend *backend)
+{
+	return "/bin/true";
+}
+
+/**
+ * up_backend_get_powersave_command:
+ **/
+const gchar *
+up_backend_get_powersave_command (UpBackend *backend, gboolean powersave)
+{
+	return "/bin/true";
+}
+
+gboolean
+up_backend_emits_resuming (UpBackend *backend)
+{
+	return FALSE;
 }

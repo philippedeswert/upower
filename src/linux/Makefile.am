@@ -67,8 +67,6 @@ EXTRA_DIST = $(libupshared_la_SOURCES) 			\
 libupshared_la_CFLAGS =					\
 	$(WARNINGFLAGS_C)
 
-libupshared_la_LIBADD = $(GIO_LIBS)
-
 clean-local :
 	rm -f *~
 

@@ -634,7 +634,9 @@ up_wakeups_timerstats_enable (UpWakeups *wakeups)
 	wakeups->priv->disable_id =
 		g_timeout_add_seconds (UP_WAKEUPS_DISABLE_INTERVAL,
 				       (GSourceFunc) up_wakeups_disable_cb, wakeups);
-	g_source_set_name_by_id (wakeups->priv->disable_id, "[upower] up_wakeups_disable_cb");
+#if GLIB_CHECK_VERSION(2,25,8)
+	g_source_set_name_by_id (wakeups->priv->disable_id, "[UpWakeups] disable");
+#endif
 
 	/* already same state */
 	if (wakeups->priv->polling_enabled)
@@ -646,12 +648,15 @@ up_wakeups_timerstats_enable (UpWakeups *wakeups)
 	wakeups->priv->poll_kernel_id =
 		g_timeout_add_seconds (UP_WAKEUPS_POLL_INTERVAL_KERNEL,
 				       (GSourceFunc) up_wakeups_poll_kernel_cb, wakeups);
-	g_source_set_name_by_id (wakeups->priv->poll_kernel_id, "[upower] up_wakeups_poll_kernel_cb");
-
+#if GLIB_CHECK_VERSION(2,25,8)
+	g_source_set_name_by_id (wakeups->priv->poll_kernel_id, "[UpWakeups] kernel");
+#endif
 	wakeups->priv->poll_userspace_id =
 		g_timeout_add_seconds (UP_WAKEUPS_POLL_INTERVAL_USERSPACE,
 				       (GSourceFunc) up_wakeups_poll_userspace_cb, wakeups);
-	g_source_set_name_by_id (wakeups->priv->poll_userspace_id, "[upower] up_wakeups_poll_userspace_cb");
+#if GLIB_CHECK_VERSION(2,25,8)
+	g_source_set_name_by_id (wakeups->priv->poll_userspace_id, "[UpWakeups] userspace");
+#endif
 
 	file = fopen (UP_WAKEUPS_SOURCE_USERSPACE, "w");
 	if (file == NULL)
@@ -731,6 +736,12 @@ up_wakeups_init (UpWakeups *wakeups)
 
 	wakeups->priv = UP_WAKEUPS_GET_PRIVATE (wakeups);
 	wakeups->priv->data = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	wakeups->priv->total_old = 0;
+	wakeups->priv->total_ave = 0;
+	wakeups->priv->poll_userspace_id = 0;
+	wakeups->priv->poll_kernel_id = 0;
+	wakeups->priv->has_capability = FALSE;
+	wakeups->priv->polling_enabled = FALSE;
 
 	wakeups->priv->connection = dbus_g_bus_get (DBUS_BUS_SYSTEM, &error);
 	if (error != NULL) {
