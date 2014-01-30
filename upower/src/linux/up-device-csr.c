@@ -52,6 +52,7 @@
 
 struct UpDeviceCsrPrivate
 {
+	guint			 poll_timer_id;
 	gboolean		 is_dual;
 	guint			 bus_num;
 	guint			 dev_num;
@@ -205,7 +206,12 @@ up_device_csr_coldplug (UpDevice *device)
 		goto out;
 
 	/* set up a poll */
-	up_daemon_start_poll (G_OBJECT (device), (GSourceFunc) up_device_csr_poll_cb);
+	csr->priv->poll_timer_id = g_timeout_add_seconds (UP_DEVICE_CSR_REFRESH_TIMEOUT,
+							  (GSourceFunc) up_device_csr_poll_cb, csr);
+
+#if GLIB_CHECK_VERSION(2,25,8)
+	g_source_set_name_by_id (csr->priv->poll_timer_id, "[UpDeviceCsr] poll");
+#endif
 out:
 	return ret;
 }
@@ -295,7 +301,9 @@ up_device_csr_init (UpDeviceCsr *csr)
 	gint retval;
 	csr->priv = UP_DEVICE_CSR_GET_PRIVATE (csr);
 
+	csr->priv->is_dual = FALSE;
 	csr->priv->raw_value = -1;
+	csr->priv->poll_timer_id = 0;
 	retval = libusb_init (&csr->priv->ctx);
 	if (retval < 0)
 		g_warning ("could not initialize libusb: %i", retval);
@@ -317,7 +325,8 @@ up_device_csr_finalize (GObject *object)
 
 	if (csr->priv->ctx != NULL)
 		libusb_exit (csr->priv->ctx);
-	up_daemon_stop_poll (object);
+	if (csr->priv->poll_timer_id > 0)
+		g_source_remove (csr->priv->poll_timer_id);
 
 	G_OBJECT_CLASS (up_device_csr_parent_class)->finalize (object);
 }
