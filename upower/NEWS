@@ -1,3 +1,46 @@
+Version 0.99.0
+~~~~~~~~~~~~~~
+Released: 2013-10-29
+
+Notes:
+ - This version contains major API changes. Use the 0.9.* versions if you want
+   to keep using the old API.
+
+New Features:
+ - Add WarningLevel and IconName properties to all devices (Bastien Nocera)
+ - Add DisplayDevice composite battery (Bastien Nocera)
+ - Enforce critical battery policy on the daemon side (Bastien Nocera)
+
+Bugfixes:
+ - Reduce client-side and daemon-side wake-ups (Bastien Nocera)
+ - Emit PropertiesChanged signals (Bastien Nocera)
+ - Register objects on the bus once they've been setup (Bastien Nocera)
+ - Clamp percentage for overfull batteries (Martin Pitt)
+
+Feature Removals:
+ - Remove battery recall support (Bastien Nocera)
+ - Remove QoS support (Bastien Nocera)
+ - Remove OnLowBattery property (use WarningLevel instead) (Bastien Nocera)
+ - Remove DeviceChanged and Changed signals (PropertiesChanged
+   signals are sent instead) (Bastien Nocera)
+
+Version 0.9.22
+~~~~~~~~~~~~~~
+Released: 2013-10-08
+
+New Features:
+ - Add temperature property for batteries (Seth Forshee)
+
+Bugfixes:
+ - Fix error handling in up_client_get_properties_sync() (Bastien Nocera, Martin Pitt)
+ - Make GetHistory() array order consistent (Martin Pitt)
+ - Fix crash with bluetooth input devices (Martin Pitt)
+ - Lots of fixes/rework for Logitech wireless input devices (Peter Wu)
+ - Allow valid UTF-8 encoded properties (Shih-Yuan Lee (FourDollars))
+ - Detect the battery of bluetooth input devices (Shih-Yuan Lee (FourDollars))
+ - Only one warning if no valid voltage found (Timothée Ravier)
+ - openbsd: Do not call g_thread_init() (Richard Hughes)
+
 Version 0.9.21
 ~~~~~~~~~~~~~~
 Released: 2013-07-26
